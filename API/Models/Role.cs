@@ -4,18 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace API.Models;
 
 [Table("tb_m_roles")]
-public class Role
-{
-    [Key]
-    [Column("guid")]
-    public Guid Guid { get; set; }
 
+public class Role : BaseEntity
+{
     [Column("name", TypeName = "nvarchar(100)")]
     public string Name { get; set; }
 
-    [Column("created_date")]
-    public DateTime CreateDate { get; set; }
+    //cardinalitas
 
-    [Column("modified_date")]
-    public DateTime ModifiedDate { get; set; }
+    public ICollection<AccountRole> AccountRoles { get; set; }
 }

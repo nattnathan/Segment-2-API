@@ -1,14 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using API.Utilities.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace API.Models;
-[Table("tb_tr_bookings")]
-public class Booking
-{
-    [Key]
-    [Column("guid")]
-    public Guid Guid { get; set; }
 
+[Table("tb_tr_bookings")]
+
+public class Booking : BaseEntity
+{
     [Column("start_date")]
     public DateTime StartDate { get; set; }
 
@@ -16,10 +15,10 @@ public class Booking
     public DateTime EndDate { get; set; }
 
     [Column("status")]
-    public int Status { get; set; }
+    public StatusLevel Status { get; set; }
 
     [Column("remarks", TypeName = "nvarchar(255)")]
-    public string remarks { get; set; }
+    public string? remarks { get; set; }
 
     [Column("room_guid")]
     public Guid RoomGuid { get; set; }
@@ -27,9 +26,7 @@ public class Booking
     [Column("employee_guid")]
     public Guid EmployeeGuid { get; set; }
 
-    [Column("created_date")]
-    public DateTime CreatedDate { get; set; }
-
-    [Column("modified_date")]
-    public DateTime ModifiedDate { get; set; }
+    //cardinalitas
+    public Room Room { get; set; }
+    public Employee Employee { get; set; }
 }

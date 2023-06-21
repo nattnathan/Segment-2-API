@@ -4,12 +4,9 @@ using System.ComponentModel.DataAnnotations;
 namespace API.Models;
 
 [Table("tb_tr_rooms")]
-public class Room
-{
-    [Key]
-    [Column("guid")]
-    public Guid Guid { get; set; }
 
+public class Room : BaseEntity
+{
     [Column("name", TypeName = "nvarchar(100)")]
     public string Name { get; set; }
 
@@ -19,9 +16,6 @@ public class Room
     [Column("capacity")]
     public int Capacity { get; set; }
 
-    [Column("created_date")]
-    public DateTime CreatedDate { get; set; }
-
-    [Column("modified_date")]
-    public DateTime ModifiedDate { get; set; }
+    //cardinalitas
+    public ICollection<Booking> Bookings { get; set; }
 }
