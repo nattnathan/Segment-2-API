@@ -93,7 +93,7 @@ namespace API.Data
             modelBuilder.Entity<AccountRole>()
                         .HasOne(accountRole => accountRole.Role)
                         .WithMany(role => role.AccountRoles)
-                        .HasForeignKey(role => role.RoleGuid);
+                        .HasForeignKey(accountRole => accountRole.RoleGuid);
 
             // Role = AccountRole (One to Many)
             /*modelBuilder.Entity<Role>()
