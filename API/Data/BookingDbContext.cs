@@ -63,7 +63,7 @@ namespace API.Data
             modelBuilder.Entity<Booking>()
                         .HasOne(booking => booking.Room)
                         .WithMany(room => room.Bookings)
-                        .HasForeignKey(room => room.RoomGuid);
+                        .HasForeignKey(booking => booking.RoomGuid);
 
             // Room - Booking (One to many)
             /*modelBuilder.Entity<Room>()
