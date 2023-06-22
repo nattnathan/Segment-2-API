@@ -81,7 +81,7 @@ namespace API.Data
             modelBuilder.Entity<Account>()
                         .HasMany(account => account.AccountRoles)
                         .WithOne(accountRole => accountRole.Account)
-                        .HasForeignKey(accountRole => accountRole.RoleGuid);
+                        .HasForeignKey(accountRole=> accountRole.AccountGuid);
 
             // AccountRoles - Account (Many to One)
             /*modelBuilder.Entity<AccountRole>()
@@ -93,7 +93,7 @@ namespace API.Data
             modelBuilder.Entity<AccountRole>()
                         .HasOne(accountRole => accountRole.Role)
                         .WithMany(role => role.AccountRoles)
-                        .HasForeignKey(accountRole => accountRole.RoleGuid);
+                        .HasForeignKey(role => role.RoleGuid);
 
             // Role = AccountRole (One to Many)
             /*modelBuilder.Entity<Role>()
