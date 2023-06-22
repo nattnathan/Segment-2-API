@@ -17,7 +17,7 @@ public class Education : BaseEntity
     [Column("gpa")]
     public double Gpa { get; set; }
 
-    [Column("university_id")]
+    [Column("university_guid")]
     public Guid UniversityGuid { get; set; }
 
     //Cardinalitas
