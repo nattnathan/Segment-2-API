@@ -23,6 +23,6 @@ public class Account : BaseEntity
     public DateTime? ExpiredTime { get; set; }
 
     //cardinalitas
-    public ICollection<AccountRole> AccountRoles { get; set; }
-    public Employee Employee { get; set; }
+    public ICollection<AccountRole>? AccountRoles { get; set; }
+    public Employee? Employee { get; set; }
 }
