@@ -6,10 +6,28 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/Employee")]
-public class EmployeeController : ControllerBase
+[Route("api/Employees")]
+public class EmployeeController : GeneralController<Employee>
 {
-    private readonly IEmployeeRepository _repository;
+    public EmployeeController(IEmployeeRepository repository) : base(repository) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*private readonly IEmployeeRepository _repository;
     public EmployeeController(IEmployeeRepository repository)
     {
         _repository = repository;
@@ -68,5 +86,4 @@ public class EmployeeController : ControllerBase
         }
 
         return Ok();
-    }
-}
+    }*/

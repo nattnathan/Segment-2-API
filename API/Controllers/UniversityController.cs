@@ -5,11 +5,29 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/University")]
+[Route("api/Universities")]
 
- public class UniversityController : ControllerBase
+ public class UniversityController : GeneralController<University>
  {
-    private readonly IUniversityRepository _repository;
+    public UniversityController(IUniversityRepository repository) : base(repository) { } 
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*private readonly IUniversityRepository _repository;
 
     public UniversityController(IUniversityRepository repository)
     {
@@ -69,5 +87,4 @@ namespace API.Controllers;
         }
 
         return Ok();
-    }
- }
+    }*/

@@ -4,7 +4,30 @@ using API.Models;
 
 namespace API.Repositories;
 
-// Class untuk Menghubungkan Controler Ke Models
+public class AccountRepository : GeneralRepository<Account> , IAccountRepository
+{
+    public AccountRepository(BookingDbContext context) : base(context) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*// Class untuk Menghubungkan Controler Ke Models
 public class AccountRepository : IAccountRepository
 {
     private readonly BookingDbContext _context;
@@ -74,4 +97,4 @@ public class AccountRepository : IAccountRepository
         }
     }
 
-}
+}*/

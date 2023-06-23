@@ -5,11 +5,30 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/AccountRole")]
+[Route("api/AccountRoles")]
 
-public class AccountRoleController : ControllerBase
-{
-    private readonly IAccountRoleRepository _repository;
+public class AccountRoleController : GeneralController<AccountRole>
+{ 
+    public AccountRoleController(IAccountRoleRepository repository) : base(repository) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*private readonly IAccountRoleRepository _repository;
     public AccountRoleController(IAccountRoleRepository repository)
     {
         _repository = repository;
@@ -63,5 +82,4 @@ public class AccountRoleController : ControllerBase
         }
 
         return Ok();
-    }
-}
+    }*/

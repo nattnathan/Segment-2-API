@@ -4,7 +4,30 @@ using API.Models;
 
 namespace API.Repositories;
 
-public class AccountRoleRepository : IAccountRoleRepository
+public class AccountRoleRepository : GeneralRepository<AccountRole>, IAccountRoleRepository
+{
+    public AccountRoleRepository(BookingDbContext context) : base(context) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*public class AccountRoleRepository : IAccountRoleRepository
 {
     private readonly BookingDbContext _context;
     public AccountRoleRepository (BookingDbContext context)
@@ -72,4 +95,4 @@ public class AccountRoleRepository : IAccountRoleRepository
         }
     }
 
-}
+}*/

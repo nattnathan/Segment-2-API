@@ -5,11 +5,30 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/Booking")]
+[Route("api/Bookings")]
 
-public class BookingController : ControllerBase
+public class BookingController : GeneralController<Booking>
 {
-    private readonly IBookingRepository _repository;
+    public BookingController(IBookingRepository repository) : base(repository) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* private readonly IBookingRepository _repository;
     public BookingController(IBookingRepository repository)
     {
         _repository = repository;
@@ -63,5 +82,4 @@ public class BookingController : ControllerBase
         }
 
         return Ok();
-    }
-}
+    }*/

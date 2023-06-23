@@ -2,77 +2,99 @@
 using API.Data;
 using API.Models;
 
-namespace API.Repositories
+namespace API.Repositories;
+
+public class BookingRepository : GeneralRepository<Booking>, IBookingRepository
 {
-    // Class untuk Menghubungkan Controler Ke Models
-    public class BookingRepository : IBookingRepository
+    public BookingRepository(BookingDbContext context) : base(context) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*// Class untuk Menghubungkan Controler Ke Models
+public class BookingRepository : IBookingRepository
+{
+    private readonly BookingDbContext _context;
+
+    public BookingRepository(BookingDbContext context)
     {
-        private readonly BookingDbContext _context;
+        _context = context;
+    }
 
-        public BookingRepository(BookingDbContext context)
+    public ICollection<Booking> GetAll()
+    {
+        return _context.Set<Booking>().ToList();
+    }
+
+    public Booking? GetByGuid(Guid guid)
+    {
+        return _context.Set<Booking>().Find(guid);
+    }
+
+    public Booking Create(Booking booking)
+    {
+        try
         {
-            _context = context;
+            _context.Set<Booking>().Add(booking);
+            _context.SaveChanges();
+
+            return booking;
         }
-
-        public ICollection<Booking> GetAll()
+        catch
         {
-            return _context.Set<Booking>().ToList();
+            return new Booking();
         }
+    }
 
-        public Booking? GetByGuid(Guid guid)
+    public bool Update(Booking booking)
+    {
+        try
         {
-            return _context.Set<Booking>().Find(guid);
+            _context.Set<Booking>().Update(booking);
+            _context.SaveChanges();
+
+            return true;
         }
-
-        public Booking Create(Booking booking)
+        catch 
         {
-            try
-            {
-                _context.Set<Booking>().Add(booking);
-                _context.SaveChanges();
-
-                return booking;
-            }
-            catch
-            {
-                return new Booking();
-            }
+            return false;
         }
+    }
 
-        public bool Update(Booking booking)
+    public bool Delete(Guid guid)
+    {
+        try
         {
-            try
-            {
-                _context.Set<Booking>().Update(booking);
-                _context.SaveChanges();
-
-                return true;
-            }
-            catch 
-            {
-                return false;
-            }
-        }
-
-        public bool Delete(Guid guid)
-        {
-            try
-            {
-                var booking = GetByGuid(guid);
-                if (booking is null)
-                {
-                    return false; ;
-                }
-
-                _context.Set<Booking>().Remove(booking);
-                _context.SaveChanges();
-
-                return true;
-            }
-            catch 
+            var booking = GetByGuid(guid);
+            if (booking is null)
             {
                 return false; ;
             }
+
+            _context.Set<Booking>().Remove(booking);
+            _context.SaveChanges();
+
+            return true;
+        }
+        catch 
+        {
+            return false; ;
         }
     }
-}
+}*/

@@ -5,11 +5,29 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/Role")]
+[Route("api/Roles")]
 
-public class RoleController : ControllerBase
+public class RoleController : GeneralController<Role>
 {
-    private readonly IRoleRepository _repository;
+    public RoleController(IRoleRepository repository) : base(repository) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*private readonly IRoleRepository _repository;
     public RoleController(IRoleRepository repository)
     {
         _repository = repository;
@@ -63,6 +81,4 @@ public class RoleController : ControllerBase
         }
 
         return Ok();
-    }
-
-}
+    }*/

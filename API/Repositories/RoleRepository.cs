@@ -3,8 +3,31 @@ using API.Data;
 using API.Models;
 
 namespace API.Repositories;
+public class RoleRepository : GeneralRepository<Role> , IRoleRepository
+{
+    public RoleRepository(BookingDbContext context) : base(context) { }
+}
 
-public class RoleRepository : IRoleRepository
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*public class RoleRepository : IRoleRepository
 {
     private readonly BookingDbContext _context;
     public RoleRepository (BookingDbContext context)
@@ -66,3 +89,4 @@ public class RoleRepository : IRoleRepository
         }       
     }
 }
+*/

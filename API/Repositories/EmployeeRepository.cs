@@ -4,8 +4,31 @@ using API.Models;
 
 namespace API.Repositories;
 
+public class EmployeeRepository : GeneralRepository<Employee>, IEmployeeRepository
+{
+    public EmployeeRepository(BookingDbContext context) : base(context) { }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Class untuk Menghubungkan Controler Ke Models
-public class EmployeeRepository : IEmployeeRepository
+/*public class EmployeeRepository : IEmployeeRepository
 {
     private readonly BookingDbContext _context;
     
@@ -75,3 +98,4 @@ public class EmployeeRepository : IEmployeeRepository
         }
     }
 }
+*/
