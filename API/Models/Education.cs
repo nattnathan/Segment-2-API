@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace API.Models;
 
-[Table("tb_m_account_educations")]
+[Table("tb_m_educations")]
 
 public class Education : BaseEntity
 {
