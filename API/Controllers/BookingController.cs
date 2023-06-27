@@ -10,7 +10,7 @@ using System.Net;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/Bookings")]
+[Route("api/bookings")]
 
 public class BookingController : ControllerBase
 {

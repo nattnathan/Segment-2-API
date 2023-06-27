@@ -9,7 +9,7 @@ using System.Net;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/Accounts")]
+[Route("api/accounts")]
 
 public class AccountController : ControllerBase
 {
@@ -67,7 +67,7 @@ public class AccountController : ControllerBase
         });
     }
 
-    [Route("Register")]
+    [Route("register")]
     [HttpPost]
     public IActionResult Register(RegisterDto register)
     {

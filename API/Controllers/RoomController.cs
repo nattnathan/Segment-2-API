@@ -7,7 +7,7 @@ using System.Net;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/Rooms")]
+[Route("api/rooms")]
 
 public class RoomController : ControllerBase
 {

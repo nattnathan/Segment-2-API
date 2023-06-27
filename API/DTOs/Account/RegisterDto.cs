@@ -9,7 +9,7 @@ namespace API.DTOs.Account
     {
         [Required]
         public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         [Required]
         public DateTime BirthDate { get; set; }

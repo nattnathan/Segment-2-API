@@ -10,7 +10,7 @@ using System.Net;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/Employees")]
+[Route("api/employees")]
 public class EmployeeController : ControllerBase
 {
     private readonly EmployeeService _service;

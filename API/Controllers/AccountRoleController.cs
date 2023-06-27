@@ -9,7 +9,7 @@ using System.Net;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/AccountRoles")]
+[Route("api/accountRoles")]
 
 public class AccountRoleController : ControllerBase
 {

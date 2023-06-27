@@ -9,7 +9,7 @@ using System.Net;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/Educations")]
+[Route("api/educations")]
 
 public class EducationController : ControllerBase
 {
