@@ -4,6 +4,7 @@ namespace API.Contracts
 {
     public interface IUniversityRepository : IGeneralRepository<University>
     {
+        IEnumerable<University> GetByName(string name);
         /*ICollection<University> GetAll();
         University? GetByGuid(Guid guid);
         University Create(University university);

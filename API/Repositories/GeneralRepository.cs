@@ -1,6 +1,7 @@
 ﻿using API.Contracts;
 using API.Data;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using System.Linq;
 
 namespace API.Repositories;
 
@@ -20,7 +21,9 @@ public class GeneralRepository<TEntity> : IGeneralRepository<TEntity>
 
     public TEntity? GetByGuid(Guid guid)
     {
-        return _context.Set<TEntity>().Find(guid);
+        var entity = _context.Set<TEntity>().Find(guid);
+        _context.ChangeTracker.Clear();
+        return entity;
     }
 
     public TEntity? Create(TEntity entity)
@@ -51,15 +54,15 @@ public class GeneralRepository<TEntity> : IGeneralRepository<TEntity>
         }
     }
 
-    public bool Delete(Guid guid)
+    public bool Delete(TEntity entity)
     {
         try
         {
-            var entity = GetByGuid(guid);
-            if (entity is null)
+/*            var delete = GetByGuid(guid);
+            if (delete is null)
             {
                 return false;
-            }
+            }*/
 
             _context.Set<TEntity>().Remove(entity);
             _context.SaveChanges();
@@ -69,6 +72,11 @@ public class GeneralRepository<TEntity> : IGeneralRepository<TEntity>
         {
             return false;
         } 
+    }
+
+    public bool IsExist(Guid guid)
+    {
+        return GetByGuid(guid) is not null;
     }
 
 }
