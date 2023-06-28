@@ -1,4 +1,4 @@
-﻿namespace API.DTOs.Account
+﻿/*namespace API.DTOs.Account
 {
     public class OtpResponseDto
     {
@@ -6,4 +6,4 @@
         public Guid Guid { get; set; }
         public int Otp { get; set; }
     }
-}
+}*/
