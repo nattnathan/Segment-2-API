@@ -1,4 +1,5 @@
 ﻿using API.Contracts;
+using API.DTOs.Account;
 using API.DTOs.Employee;
 using API.DTOs.Roles;
 using API.Models;
@@ -176,6 +177,22 @@ public class EmployeeService
         }
 
         return 1;
+    }
+
+    public OtpResponseDto? GetByEmail(string email)
+    {
+        var account = _employeeRepository.GetAll()
+            .FirstOrDefault(e => e.Email.Contains(email));
+
+        if (account != null)
+        {
+            return new OtpResponseDto
+            {
+                Email = account.Email,
+                Guid = account.Guid
+            };
+        }
+        return null;
     }
 
     public string GenerateNIK()

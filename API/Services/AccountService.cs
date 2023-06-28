@@ -2,6 +2,11 @@
 using API.DTOs.Account;
 using API.Models;
 using API.Utilities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace API.Services;
 
@@ -226,4 +231,49 @@ public class AccountService
 
         return 1;
     }
+
+    public ForgotPasswordDto GenerateOtp(string email)
+    {
+        var employee = _employeeRepository.GetAll().SingleOrDefault(account => account.Email == email);
+        if (employee is null)
+        {
+            return null;
+        }
+
+        var toDto = new ForgotPasswordDto
+        {
+            Email = employee.Email,
+            Otp = GenerateRandomOTP(),
+            ExpireTime = DateTime.Now.AddMinutes(5)
+        };
+
+        var relatedAccount = _accountRepository.GetByGuid(employee.Guid);
+
+        var updateAccountDto = new Account
+        {
+            Guid = relatedAccount.Guid,
+            Password = relatedAccount.Password,
+            IsDeleted = (bool)relatedAccount.IsDeleted,
+            Otp = toDto.Otp,
+            IsUsed = false,
+            ExpiredTime = DateTime.Now.AddMinutes(5)
+        };
+
+        var updateResult = _accountRepository.Update(updateAccountDto);
+
+        return toDto;
+    }
+
+    private int GenerateRandomOTP()
+    {
+        var random = new Random();
+        var otp = random.Next(100000, 999999);
+        return otp;
+    }
+
 }
+
+
+
+
+

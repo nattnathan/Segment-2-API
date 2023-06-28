@@ -175,6 +175,29 @@ public class AccountController : ControllerBase
             Message = "Successfully deleted"
         });
     }
+
+    [HttpPost("forgot-password")]
+    public IActionResult ForgotPassword(string email)
+    {
+        var generateOtp = _service.GenerateOtp(email);
+        if (generateOtp is null)
+        {
+            return BadRequest(new ResponseHandler<ForgotPasswordDto>
+            {
+                Code = StatusCodes.Status400BadRequest,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = "Email Not Found"
+            });
+        }
+
+        return Ok(new ResponseHandler<ForgotPasswordDto>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Otp is Generated",
+            Data = generateOtp
+        });
+    }
 }
 
 
