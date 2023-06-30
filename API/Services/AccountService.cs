@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Security.Principal;
+using static System.Net.WebRequestMethods;
 
 namespace API.Services;
 
@@ -22,19 +23,22 @@ public class AccountService
     private readonly IEducationRepository _educationRepository;
     private readonly ITokenHandler _tokenHandler;
     private readonly IRoleRepository _roleRepository;
+    private readonly IEmailHandler _emailHandler;
     public AccountService(IAccountRepository accountRepository, 
                          IEmployeeRepository employeeRepository,
                          IUniversityRepository universityRepository,
                          IEducationRepository educationRepository,
                          ITokenHandler tokenHandler,
-                         IRoleRepository roleRepository)
+                         IRoleRepository roleRepository,
+                         IEmailHandler emailHandler)
     {
         _accountRepository = accountRepository;
         _employeeRepository = employeeRepository;
         _universityRepository = universityRepository;
         _educationRepository = educationRepository;
         _tokenHandler = tokenHandler;
-        _roleRepository = roleRepository;   
+        _roleRepository = roleRepository;
+        _emailHandler = emailHandler;              
     }
 
     public RegisterDto? Register(RegisterDto registerDto)
@@ -269,6 +273,10 @@ public class AccountService
 
         var updateResult = _accountRepository.Update(updateAccountDto);
 
+        _emailHandler.SendEmail(toDto.Email,
+                            "Forgot Password",
+                            $"Your OTP is {toDto.Otp}");
+
         return toDto;
     }
 
@@ -324,10 +332,12 @@ public class AccountService
         {
             return 0;
         }
+
         if (getAccount.IsUsed == true)
         {
             return 1;
         }
+
         if (getAccount.ExpiredTime < DateTime.Now)
         {
             return 2;
