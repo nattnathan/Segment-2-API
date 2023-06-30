@@ -43,7 +43,7 @@ public class AccountService
 
     public RegisterDto? Register(RegisterDto registerDto)
     {
-        EmployeeService employeService = new EmployeeService(_employeeRepository);
+        EmployeeService employeService = new EmployeeService(_employeeRepository, _educationRepository, _universityRepository);
         Employee employee = new Employee
         {
             Guid = new Guid(),

@@ -167,13 +167,60 @@ public class EmployeeController : ControllerBase
         }
 
         return Ok(new ResponseHandler <IEnumerable <GetEmployeeDto>>
-            {
-            Code = StatusCodes.Status200OK,
-                Status = HttpStatusCode.OK.ToString(),
-                Message = "Data By Name Found",
-                Data = employee
-            });
+        {
+        Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Data By Name Found",
+            Data = employee
+        });
     }
+
+    [HttpGet("get-all-master")]
+    public IActionResult GetMaster()
+    {
+        var master = _service.GetMaster();
+        if (master is null)
+        {
+            return NotFound(new ResponseHandler<EmployeeEducationDto>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data Not Found"
+            });
+        }
+
+        return Ok(new ResponseHandler<IEnumerable<EmployeeEducationDto>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Data Found",
+            Data = master
+        });
+    }
+
+    [HttpGet("get-master/{guid}")]
+    public IActionResult GetMasterByGuid(Guid guid)
+    {
+        var masterGuid = _service.GetMasterByGuid(guid);
+        if (masterGuid is null)
+        {
+            return NotFound(new ResponseHandler<EmployeeEducationDto>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data Not Found"
+            });
+        }
+
+        return Ok(new ResponseHandler<EmployeeEducationDto>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Data Found",
+            Data = masterGuid
+        });
+    }
+
 }
 
 

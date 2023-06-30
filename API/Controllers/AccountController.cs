@@ -239,7 +239,7 @@ public class AccountController : ControllerBase
             Code = StatusCodes.Status200OK,
             Status = HttpStatusCode.OK.ToString(),
             Message = "Otp is Generated",
-            /*Data = generateOtp*/
+            
         });
     }
 
