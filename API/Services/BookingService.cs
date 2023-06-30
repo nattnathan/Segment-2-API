@@ -1,146 +1,200 @@
 ﻿using API.Contracts;
 using API.DTOs.Booking;
+using API.DTOs.Rooms;
 using API.Models;
+using System.Runtime.CompilerServices;
 
-namespace API.Services
+namespace API.Services;
+
+public class BookingService
 {
-    public class BookingService
+    private readonly IBookingRepository _bookingRepository;
+    private readonly IRoomRepository _roomRepository;
+
+    public BookingService(IBookingRepository bookingRepository,
+                          IRoomRepository roomRepository)
     {
-        private readonly IBookingRepository _bookingRepository;
+        _bookingRepository = bookingRepository;
+        _roomRepository = roomRepository;
+    }
 
-        public BookingService(IBookingRepository bookingRepository)
+    public IEnumerable<GetBookingDto>? Getbooking()
+    {
+        var bookings = _bookingRepository.GetAll();
+        if (!bookings.Any())
         {
-            _bookingRepository = bookingRepository;
+            return null;
         }
 
-        public IEnumerable<GetBookingDto>? Getbooking()
+        var toDto = bookings.Select(booking => new GetBookingDto
         {
-            var bookings = _bookingRepository.GetAll();
-            if (!bookings.Any())
-            {
-                return null;
-            }
+            Guid = booking.Guid,
+            StartDate = booking.StartDate,
+            EndDate = booking.EndDate,
+            Status = booking.Status,
+            Remarks = booking.Remarks,
+            RoomGuid = booking.RoomGuid,
+            EmployeeGuid = booking.EmployeeGuid
 
-            var toDto = bookings.Select(booking => new GetBookingDto
-            {
-                Guid = booking.Guid,
-                StartDate = booking.StartDate,
-                EndDate = booking.EndDate,
-                Status = booking.Status,
-                Remarks = booking.Remarks,
-                RoomGuid = booking.RoomGuid,
-                EmployeeGuid = booking.EmployeeGuid
+        });
 
-            });
+        return toDto;
+    }
 
-            return toDto;
+    public GetBookingDto? Getbooking(Guid guid)
+    {
+        var booking = _bookingRepository.GetByGuid(guid);
+        if (booking is null)
+        {
+            return null;
         }
 
-        public GetBookingDto? Getbooking(Guid guid)
+        var toDto = new GetBookingDto
         {
-            var booking = _bookingRepository.GetByGuid(guid);
-            if (booking is null)
+            Guid = booking.Guid,
+            StartDate = booking.StartDate,
+            EndDate = booking.EndDate,
+            Status = booking.Status,
+            Remarks = booking.Remarks,
+            RoomGuid = booking.RoomGuid,
+            EmployeeGuid = booking.EmployeeGuid
+        };
+
+        return toDto;
+    }
+
+    public GetBookingDto? Createbooking(NewBookingDto newbookingDto)
+    {
+        var booking = new Booking
+        {
+            Guid = new Guid(),
+            StartDate = newbookingDto.StartDate,
+            EndDate = newbookingDto.EndDate,
+            Status = newbookingDto.Status,
+            Remarks = newbookingDto.Remarks,
+            RoomGuid = newbookingDto.RoomGuid,
+            EmployeeGuid = newbookingDto.EmployeeGuid,
+            CreatedDate = DateTime.Now,
+            ModifiedDate = DateTime.Now
+        };
+
+        var createdbooking = _bookingRepository.Create(booking);
+        if (createdbooking is null)
+        {
+            return null;
+        }
+
+        var toDto = new GetBookingDto
+        {
+            Guid = createdbooking.Guid,
+            StartDate = newbookingDto.StartDate,
+            EndDate = newbookingDto.EndDate,
+            Status = newbookingDto.Status,
+            Remarks = newbookingDto.Remarks,
+            RoomGuid = newbookingDto.RoomGuid,
+            EmployeeGuid = newbookingDto.EmployeeGuid,
+        };
+
+        return toDto;
+
+    }
+
+    public int Updatebooking(GetBookingDto updatebookingDto)
+    {
+        var isExist = _bookingRepository.IsExist(updatebookingDto.Guid);
+        if (!isExist)
+        {
+            return -1; // Not Found
+        }
+
+        var getbooking = _bookingRepository.GetByGuid(updatebookingDto.Guid);
+        var booking = new Booking
+        {
+            Guid = updatebookingDto.Guid,
+            StartDate = updatebookingDto.StartDate,
+            EndDate = updatebookingDto.EndDate,
+            Status = updatebookingDto.Status,
+            Remarks = updatebookingDto.Remarks,
+            RoomGuid = updatebookingDto.RoomGuid,
+            EmployeeGuid = updatebookingDto.EmployeeGuid,
+            ModifiedDate = DateTime.Now,
+            CreatedDate = getbooking!.CreatedDate
+        };
+
+        var isUpdate = _bookingRepository.Update(booking);
+        if (!isUpdate)
+        {
+            return 0;
+        }
+
+        return 1;
+    }
+
+    public int Deletebooking(Guid guid)
+    {
+        var isExist = _bookingRepository.IsExist(guid);
+        if (!isExist)
+        {
+            return -1; 
+        }
+
+        var booking = _bookingRepository.GetByGuid(guid);
+        var isDelete = _bookingRepository.Delete(booking!);
+        if (!isDelete)
+        {
+            return 0; // 
+        }
+
+        return 1;
+    }
+
+    public IEnumerable<BookingLengthDto> BookingDuration()
+    {
+        var bookings = _bookingRepository.GetAll();
+        var rooms = _roomRepository.GetAll();
+
+        var entities = (from booking in bookings
+                        join room in rooms on booking.RoomGuid equals room.Guid
+                        select new
+                        {
+                            guid = room.Guid,
+                            startDate = booking.StartDate,
+                            endDate = booking.EndDate,
+                            roomName = room.Name
+                        }).ToList();
+
+        var bookingDurations = new List<BookingLengthDto>();
+
+        foreach (var entity in entities)
+        {
+            TimeSpan duration = entity.endDate - entity.startDate;
+
+            // Count the number of weekends within the duration
+            int totalDays = (int)duration.TotalDays;
+            int weekends = 0;
+
+            for (int i = 0; i <= totalDays; i++)
             {
-                return null;
+                var currentDate = entity.startDate.AddDays(i);
+                if (currentDate.DayOfWeek == DayOfWeek.Saturday || currentDate.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    weekends++;
+                }
             }
 
-            var toDto = new GetBookingDto
+            // Calculate the duration without weekends
+            TimeSpan bookingLength = duration - TimeSpan.FromDays(weekends);
+
+            var bookingDurationDto = new BookingLengthDto
             {
-                Guid = booking.Guid,
-                StartDate = booking.StartDate,
-                EndDate = booking.EndDate,
-                Status = booking.Status,
-                Remarks = booking.Remarks,
-                RoomGuid = booking.RoomGuid,
-                EmployeeGuid = booking.EmployeeGuid
+                RoomGuid = entity.guid,
+                RoomName = entity.roomName,
+                BookingLength = bookingLength
             };
 
-            return toDto;
+            bookingDurations.Add(bookingDurationDto);
         }
 
-        public GetBookingDto? Createbooking(NewBookingDto newbookingDto)
-        {
-            var booking = new Booking
-            {
-                Guid = new Guid(),
-                StartDate = newbookingDto.StartDate,
-                EndDate = newbookingDto.EndDate,
-                Status = newbookingDto.Status,
-                Remarks = newbookingDto.Remarks,
-                RoomGuid = newbookingDto.RoomGuid,
-                EmployeeGuid = newbookingDto.EmployeeGuid,
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
-            };
-
-            var createdbooking = _bookingRepository.Create(booking);
-            if (createdbooking is null)
-            {
-                return null;
-            }
-
-            var toDto = new GetBookingDto
-            {
-                Guid = createdbooking.Guid,
-                StartDate = newbookingDto.StartDate,
-                EndDate = newbookingDto.EndDate,
-                Status = newbookingDto.Status,
-                Remarks = newbookingDto.Remarks,
-                RoomGuid = newbookingDto.RoomGuid,
-                EmployeeGuid = newbookingDto.EmployeeGuid,
-            };
-
-            return toDto;
-
-        }
-
-        public int Updatebooking(GetBookingDto updatebookingDto)
-        {
-            var isExist = _bookingRepository.IsExist(updatebookingDto.Guid);
-            if (!isExist)
-            {
-                return -1; // Not Found
-            }
-
-            var getbooking = _bookingRepository.GetByGuid(updatebookingDto.Guid);
-            var booking = new Booking
-            {
-                Guid = updatebookingDto.Guid,
-                StartDate = updatebookingDto.StartDate,
-                EndDate = updatebookingDto.EndDate,
-                Status = updatebookingDto.Status,
-                Remarks = updatebookingDto.Remarks,
-                RoomGuid = updatebookingDto.RoomGuid,
-                EmployeeGuid = updatebookingDto.EmployeeGuid,
-                ModifiedDate = DateTime.Now,
-                CreatedDate = getbooking!.CreatedDate
-            };
-
-            var isUpdate = _bookingRepository.Update(booking);
-            if (!isUpdate)
-            {
-                return 0;
-            }
-
-            return 1;
-        }
-
-        public int Deletebooking(Guid guid)
-        {
-            var isExist = _bookingRepository.IsExist(guid);
-            if (!isExist)
-            {
-                return -1; 
-            }
-
-            var booking = _bookingRepository.GetByGuid(guid);
-            var isDelete = _bookingRepository.Delete(booking!);
-            if (!isDelete)
-            {
-                return 0; // 
-            }
-
-            return 1;
-        }
+        return bookingDurations;
     }
 }

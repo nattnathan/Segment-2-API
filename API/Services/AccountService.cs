@@ -1,11 +1,15 @@
 ﻿using API.Contracts;
 using API.DTOs.Account;
+using API.DTOs.Roles;
 using API.Models;
 using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Claims;
 using System.Security.Principal;
 
 namespace API.Services;
@@ -16,16 +20,21 @@ public class AccountService
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IUniversityRepository _universityRepository;
     private readonly IEducationRepository _educationRepository;
-
+    private readonly ITokenHandler _tokenHandler;
+    private readonly IRoleRepository _roleRepository;
     public AccountService(IAccountRepository accountRepository, 
                          IEmployeeRepository employeeRepository,
                          IUniversityRepository universityRepository,
-                         IEducationRepository educationRepository)
+                         IEducationRepository educationRepository,
+                         ITokenHandler tokenHandler,
+                         IRoleRepository roleRepository)
     {
         _accountRepository = accountRepository;
         _employeeRepository = employeeRepository;
         _universityRepository = universityRepository;
         _educationRepository = educationRepository;
+        _tokenHandler = tokenHandler;
+        _roleRepository = roleRepository;   
     }
 
     public RegisterDto? Register(RegisterDto registerDto)
@@ -94,7 +103,6 @@ public class AccountService
         {
             return null;
         }
-        
 
         var toDto = new RegisterDto
         {
@@ -232,7 +240,7 @@ public class AccountService
         return 1;
     }
 
-    public ForgotPasswordDto GenerateOtp(string email)
+    public ForgotPasswordDto ForgotPassword(string email)
     {
         var employee = _employeeRepository.GetAll().SingleOrDefault(account => account.Email == email);
         if (employee is null)
@@ -269,6 +277,79 @@ public class AccountService
         var random = new Random();
         var otp = random.Next(100000, 999999);
         return otp;
+    }
+
+    public string Login(LoginDto login)
+    {
+        var emailEmp = _employeeRepository.GetByEmail(login.Email);
+        if (emailEmp == null)
+        {
+            return "0";
+        }
+
+        var pass = _accountRepository.GetByGuid(emailEmp.Guid);
+        var isPasswordValid = Hashing.ValidatePassword(login.Password, pass.Password);
+        if (!isPasswordValid)
+        {
+            return "-1";
+        }
+
+        var claims = new List<Claim>()
+            {
+                new Claim("Nik", emailEmp.Nik),
+                new Claim("FullName", $"{emailEmp.FirstName} {emailEmp.LastName}"),
+                new Claim("Email", login.Email)
+            };
+        try
+        {
+            var getToken = _tokenHandler.GenerateToken(claims);
+            return getToken;
+        }
+        catch
+        {
+            return "-2";
+        }
+    }
+
+    public int ChangePassword(ChangePasswordDto changePasswordDto)
+    {
+        var isExist = _employeeRepository.GetByEmail(changePasswordDto.Email);
+        if (isExist is null)
+        {
+            return -1;
+        }
+
+        var getAccount = _accountRepository.GetByGuid(isExist.Guid);
+        if (getAccount.Otp != changePasswordDto.Otp)
+        {
+            return 0;
+        }
+        if (getAccount.IsUsed == true)
+        {
+            return 1;
+        }
+        if (getAccount.ExpiredTime < DateTime.Now)
+        {
+            return 2;
+        }
+
+        var account = new Account
+        {
+            Guid = getAccount.Guid,
+            IsUsed = getAccount.IsUsed,
+            IsDeleted = getAccount.IsDeleted,
+            ModifiedDate = DateTime.Now,
+            CreatedDate = getAccount!.CreatedDate,
+            Otp = changePasswordDto.Otp,
+            ExpiredTime = getAccount.ExpiredTime,
+            Password = Hashing.HashPassword(changePasswordDto.NewPassword)
+        };
+        var isUpdated = _accountRepository.Update(account);
+        if (!isUpdated)
+        {
+            return 0;
+        }
+        return 3;
     }
 
 }

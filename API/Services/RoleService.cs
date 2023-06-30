@@ -4,136 +4,135 @@ using API.DTOs.Rooms;
 using API.Models;
 using API.Repositories;
 
-namespace API.Services
+namespace API.Services;
+
+public class RoleService
 {
-    public class RoleService
+    private readonly IRoleRepository _roleRepository;
+    public RoleService(IRoleRepository roleRepository)
     {
-        private readonly IRoleRepository _roleRepository;
-        public RoleService(IRoleRepository roleRepository)
+        _roleRepository = roleRepository;
+    }
+
+    public IEnumerable<GetRoleDto>? GetRole()
+    {
+        var roles = _roleRepository.GetAll();
+        if (!roles.Any())
         {
-            _roleRepository = roleRepository;
+            return null;
         }
 
-        public IEnumerable<GetRoleDto>? GetRole()
+        var toDto = roles.Select(role => new GetRoleDto
         {
-            var roles = _roleRepository.GetAll();
-            if (!roles.Any())
-            {
-                return null;
-            }
+            Guid = role.Guid,
+            Name = role.Name,
+        });
 
-            var toDto = roles.Select(role => new GetRoleDto
-            {
-                Guid = role.Guid,
-                Name = role.Name,
-            });
+        return toDto;
+    }
 
-            return toDto;
+    public GetRoleDto? GetRole(Guid guid)
+    {
+        var role = _roleRepository.GetByGuid(guid);
+        if (role is null)
+        {
+            return null; 
         }
 
-        public GetRoleDto? GetRole(Guid guid)
+        var toDto = new GetRoleDto
         {
-            var role = _roleRepository.GetByGuid(guid);
-            if (role is null)
-            {
-                return null; 
-            }
+            Guid = role.Guid,
+            Name = role.Name,
+        };
 
-            var toDto = new GetRoleDto
-            {
-                Guid = role.Guid,
-                Name = role.Name,
-            };
+        return toDto; 
+    }
 
-            return toDto; 
+    public IEnumerable<GetRoleDto>? GetRole(string name)
+    {
+        var roles = _roleRepository.GetByName(name);
+        if (!roles.Any())
+        {
+            return null; 
         }
 
-        public IEnumerable<GetRoleDto>? GetRole(string name)
+        var toDto = roles.Select(role => new GetRoleDto
         {
-            var roles = _roleRepository.GetByName(name);
-            if (!roles.Any())
-            {
-                return null; 
-            }
+            Guid = role.Guid,
+            Name = role.Name,
 
-            var toDto = roles.Select(role => new GetRoleDto
-            {
-                Guid = role.Guid,
-                Name = role.Name,
+        }).ToList();
 
-            }).ToList();
+        return toDto; 
+    }
 
-            return toDto; 
+    public GetRoleDto? CreateRole(NewRoleDto newRoleDto)
+    {
+        var role = new Role
+        {
+            Name = newRoleDto.Name,
+            Guid = new Guid(),
+            CreatedDate = DateTime.Now,
+            ModifiedDate = DateTime.Now
+        };
+
+        var createdRole = _roleRepository.Create(role);
+        if (createdRole is null)
+        {
+            return null; 
         }
 
-        public GetRoleDto? CreateRole(NewRoleDto newRoleDto)
+        var toDto = new GetRoleDto
         {
-            var role = new Role
-            {
-                Name = newRoleDto.Name,
-                Guid = new Guid(),
-                CreatedDate = DateTime.Now,
-                ModifiedDate = DateTime.Now
-            };
+            Guid = createdRole.Guid,
+            Name = createdRole.Name,
+        };
 
-            var createdRole = _roleRepository.Create(role);
-            if (createdRole is null)
-            {
-                return null; 
-            }
+        return toDto;
 
-            var toDto = new GetRoleDto
-            {
-                Guid = createdRole.Guid,
-                Name = createdRole.Name,
-            };
+    }
 
-            return toDto;
-
+    public int UpdateRole(GetRoleDto updateRoleDto)
+    {
+        var isExist = _roleRepository.IsExist(updateRoleDto.Guid);
+        if (!isExist)
+        {
+            return -1; // Not Found
         }
 
-        public int UpdateRole(GetRoleDto updateRoleDto)
+        var getRole = _roleRepository.GetByGuid(updateRoleDto.Guid);
+        var role = new Role
         {
-            var isExist = _roleRepository.IsExist(updateRoleDto.Guid);
-            if (!isExist)
-            {
-                return -1; // Not Found
-            }
+            Guid = updateRoleDto.Guid,
+            Name = updateRoleDto.Name,
+            ModifiedDate = DateTime.Now,
+            CreatedDate = getRole!.CreatedDate
+        };
 
-            var getRole = _roleRepository.GetByGuid(updateRoleDto.Guid);
-            var role = new Role
-            {
-                Guid = updateRoleDto.Guid,
-                Name = updateRoleDto.Name,
-                ModifiedDate = DateTime.Now,
-                CreatedDate = getRole!.CreatedDate
-            };
-
-            var isUpdate = _roleRepository.Update(role);
-            if (!isUpdate)
-            {
-                return 0; 
-            }
-
-            return 1; 
+        var isUpdate = _roleRepository.Update(role);
+        if (!isUpdate)
+        {
+            return 0; 
         }
 
-        public int DeleteRole(Guid guid)
+        return 1; 
+    }
+
+    public int DeleteRole(Guid guid)
+    {
+        var isExist = _roleRepository.IsExist(guid);
+        if (!isExist)
         {
-            var isExist = _roleRepository.IsExist(guid);
-            if (!isExist)
-            {
-                return -1; 
-            }
-
-            var role = _roleRepository.GetByGuid(guid);
-            var isDelete = _roleRepository.Delete(role!);
-            if (!isDelete)
-            {
-                return 0; 
-            }
-
-            return 1;
+            return -1; 
         }
+
+        var role = _roleRepository.GetByGuid(guid);
+        var isDelete = _roleRepository.Delete(role!);
+        if (!isDelete)
+        {
+            return 0; 
+        }
+
+        return 1;
     }
 }
