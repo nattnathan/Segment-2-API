@@ -1,9 +1,7 @@
 ﻿using API.Contracts;
 using API.DTOs.Booking;
-using API.DTOs.Rooms;
 using API.Models;
-using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace API.Services;
 
@@ -11,12 +9,15 @@ public class BookingService
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IRoomRepository _roomRepository;
+    private readonly IEmployeeRepository _employeeRepository;
 
     public BookingService(IBookingRepository bookingRepository,
-                          IRoomRepository roomRepository)
+                          IRoomRepository roomRepository,
+                          IEmployeeRepository employeeRepository)
     {
         _bookingRepository = bookingRepository;
         _roomRepository = roomRepository;
+        _employeeRepository = employeeRepository;
     }
 
     public IEnumerable<GetBookingDto>? Getbooking()
@@ -149,7 +150,7 @@ public class BookingService
         return 1;
     }
 
-    public IEnumerable<BookingLengthDto> BookingDuration()
+    public IEnumerable<BookingLengthDto>? BookingDuration()
     {
         var bookings = _bookingRepository.GetAll();
         var rooms = _roomRepository.GetAll();
@@ -217,9 +218,41 @@ public class BookingService
         return bookingDetails;
     }
 
-    public BookingDetailsDto GetBookingDetailsByGuid(Guid guid)
+    public BookingDetailsDto? GetBookingDetailsByGuid(Guid guid)
     {
         var relatedBooking = GetBookingDetais().SingleOrDefault(b => b.Guid == guid);
         return relatedBooking;
+    }
+
+    public IEnumerable<BookingTodayDto>? BookingToday()
+    {
+        var bookings = _bookingRepository.GetAll();
+        if (bookings is null)
+        {
+            return null;
+        }
+
+        var employees = _employeeRepository.GetAll();
+        var rooms = _roomRepository.GetAll();
+
+        var bookingToday = (from booking in bookings
+            join employee in employees on booking.EmployeeGuid equals employee.Guid
+            join room in rooms on booking.RoomGuid equals room.Guid
+            where booking.StartDate <= DateTime.Now.Date && booking.EndDate >= DateTime.Now
+            select new BookingTodayDto
+            {
+                BookingGuid = booking.Guid,
+                RoomName = room.Name,
+                Status = booking.Status,
+                Floor = room.Floor,
+                BookedBy = employee.FirstName + " " + employee.LastName
+            }).ToList();
+
+        if (!bookingToday.Any())
+        {
+            return null;
+        }
+
+        return bookingToday;
     }
 }

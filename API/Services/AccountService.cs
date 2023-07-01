@@ -244,7 +244,7 @@ public class AccountService
         return 1;
     }
 
-    public ForgotPasswordDto ForgotPassword(string email)
+    public ForgotPasswordDto? ForgotPassword(string email)
     {
         var employee = _employeeRepository.GetAll().SingleOrDefault(account => account.Email == email);
         if (employee is null)

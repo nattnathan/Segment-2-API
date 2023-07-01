@@ -1,6 +1,4 @@
-﻿using API.Contracts;
-using API.DTOs.AccountRole;
-using API.Models;
+﻿using API.DTOs.AccountRole;
 using API.Services;
 using API.Utilities;
 using Microsoft.AspNetCore.Mvc;

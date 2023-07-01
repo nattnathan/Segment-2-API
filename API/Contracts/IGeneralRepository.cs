@@ -1,6 +1,4 @@
-﻿using API.Models;
-
-namespace API.Contracts
+﻿namespace API.Contracts
 {
     public interface IGeneralRepository<TEntity>
     {

@@ -1,7 +1,4 @@
-﻿using API.Contracts;
-using API.DTOs.Booking;
-using API.DTOs.Education;
-using API.Models;
+﻿using API.DTOs.Booking;
 using API.Services;
 using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -216,6 +213,29 @@ public class BookingController : ControllerBase
 
         }
         return Ok(new ResponseHandler<BookingDetailsDto>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "All Data Found",
+            Data = bookingDetailsGuid
+        });
+    }
+
+    [HttpGet("booking-today")]
+    public IActionResult GetBookingToday()
+    {
+        var bookingDetailsGuid = _service.BookingToday();
+        if (bookingDetailsGuid == null)
+        {
+            return NotFound(new ResponseHandler<GetBookingDto>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data Not Found"
+            });
+
+        }
+        return Ok(new ResponseHandler<IEnumerable<BookingTodayDto>>
         {
             Code = StatusCodes.Status200OK,
             Status = HttpStatusCode.OK.ToString(),
