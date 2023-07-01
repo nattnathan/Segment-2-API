@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace API.Models;
 
-[Table("tb_tr_rooms")]
+[Table("tb_m_rooms")]
 
 public class Room : BaseEntity
 {

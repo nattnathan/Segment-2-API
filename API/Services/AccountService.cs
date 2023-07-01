@@ -1,17 +1,9 @@
 ﻿using API.Contracts;
+using API.Data;
 using API.DTOs.Account;
-using API.DTOs.Roles;
 using API.Models;
 using API.Utilities;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Net;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
-using System.Security.Principal;
-using static System.Net.WebRequestMethods;
 
 namespace API.Services;
 
@@ -24,13 +16,15 @@ public class AccountService
     private readonly ITokenHandler _tokenHandler;
     private readonly IRoleRepository _roleRepository;
     private readonly IEmailHandler _emailHandler;
+    private readonly BookingDbContext _bookingDbContext;
     public AccountService(IAccountRepository accountRepository, 
                          IEmployeeRepository employeeRepository,
                          IUniversityRepository universityRepository,
                          IEducationRepository educationRepository,
                          ITokenHandler tokenHandler,
                          IRoleRepository roleRepository,
-                         IEmailHandler emailHandler)
+                         IEmailHandler emailHandler,
+                         BookingDbContext bookingDbContext)
     {
         _accountRepository = accountRepository;
         _employeeRepository = employeeRepository;
@@ -38,94 +32,115 @@ public class AccountService
         _educationRepository = educationRepository;
         _tokenHandler = tokenHandler;
         _roleRepository = roleRepository;
-        _emailHandler = emailHandler;              
+        _emailHandler = emailHandler;
+        _bookingDbContext = bookingDbContext;
     }
 
     public RegisterDto? Register(RegisterDto registerDto)
     {
         EmployeeService employeService = new EmployeeService(_employeeRepository, _educationRepository, _universityRepository);
-        Employee employee = new Employee
+        using var transaction = _bookingDbContext.Database.BeginTransaction();
+        try
         {
-            Guid = new Guid(),
-            Nik = employeService.GenerateNIK(),
-            FirstName = registerDto.FirstName,
-            LastName = registerDto.LastName,
-            BirthDate = registerDto.BirthDate,
-            Gender = registerDto.Gender,
-            HiringDate = registerDto.HiringDate,
-            Email = registerDto.Email,
-            PhoneNumber = registerDto.Phone,
-            CreatedDate = DateTime.Now,
-            ModifiedDate = DateTime.Now
-        };
+            Employee employee = new Employee
+            {
+                Guid = new Guid(),
+                Nik = employeService.GenerateNIK(),
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                BirthDate = registerDto.BirthDate,
+                Gender = registerDto.Gender,
+                HiringDate = registerDto.HiringDate,
+                Email = registerDto.Email,
+                PhoneNumber = registerDto.Phone,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
+            };
 
-        var createdEmployee = _employeeRepository.Create(employee);
-        if (createdEmployee is null)
+            var createdEmployee = _employeeRepository.Create(employee);
+            if (createdEmployee is null)
+            {
+                return null;
+            }
+
+            var universityEntity = _universityRepository.GetByCodeName(registerDto.UniversityCode, registerDto.UniversityName);
+            University university = new University
+            {
+                Guid = new Guid(),
+                Code = registerDto.UniversityCode,
+                Name = registerDto.UniversityName,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
+            };
+
+            var createdUniversity = _universityRepository.Create(university);
+            if (createdUniversity is null)
+            {
+                return null;
+            }
+
+            Education education = new Education
+            {
+                Guid = employee.Guid,
+                Major = registerDto.Major,
+                Degree = registerDto.Degree,
+                Gpa = registerDto.Gpa,
+                UniversityGuid = university.Guid,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now
+
+            };
+
+            var createdEducation = _educationRepository.Create(education);
+            if (createdEducation is null)
+            {
+                return null;
+            }
+
+            Account account = new Account
+            {
+                Guid = employee.Guid,
+                Password = Hashing.HashPassword(registerDto.Password),
+                ConfirmPassword = registerDto.ConfirmPassword,
+                IsDeleted = false,
+                IsUsed = false,
+                Otp = 0,
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now,
+                ExpiredTime = DateTime.Now.AddYears(3)
+            };
+
+            var createdAccount = _accountRepository.Create(account);
+            if (createdAccount is null)
+            {
+                return null;
+            }
+
+            var toDto = new RegisterDto
+            {
+                FirstName = createdEmployee.FirstName,
+                LastName = createdEmployee.LastName,
+                BirthDate = createdEmployee.BirthDate,
+                Gender = createdEmployee.Gender,
+                HiringDate = createdEmployee.HiringDate,
+                Email = createdEmployee.Email,
+                Phone = createdEmployee.PhoneNumber,
+                Password = createdAccount.Password,
+                Major = createdEducation.Major,
+                Degree = createdEducation.Degree,
+                Gpa = createdEducation.Gpa,
+                UniversityCode = createdUniversity.Code,
+                UniversityName = createdUniversity.Name
+            };
+
+            transaction.Commit();
+            return toDto;
+        }
+        catch (Exception)
         {
+            transaction.Rollback();
             return null;
         }
-
-
-        University university = new University
-        {
-            Guid = new Guid(),
-            Code = registerDto.UniversityCode,
-            Name = registerDto.UniversityName
-        };
-
-        var createdUniversity = _universityRepository.Create(university);
-        if (createdUniversity is null)
-        {
-            return null;
-        }
-
-        Education education = new Education
-        {
-            Guid = employee.Guid,
-            Major = registerDto.Major,
-            Degree = registerDto.Degree,
-            Gpa = registerDto.Gpa,
-            UniversityGuid = university.Guid
-            
-        };
-
-        var createdEducation = _educationRepository.Create(education);
-        if (createdEducation is null)
-        {
-            return null;
-        }
-
-        Account account = new Account
-        {
-            Guid = employee.Guid,
-            Password = Hashing.HashPassword(registerDto.Password),
-            ConfirmPassword = registerDto.ConfirmPassword
-        };
-
-        var createdAccount = _accountRepository.Create(account);
-        if (createdAccount is null)
-        {
-            return null;
-        }
-
-        var toDto = new RegisterDto
-        {
-            FirstName = createdEmployee.FirstName,
-            LastName = createdEmployee.LastName,
-            BirthDate = createdEmployee.BirthDate,
-            Gender = createdEmployee.Gender,
-            HiringDate = createdEmployee.HiringDate,
-            Email = createdEmployee.Email,
-            Phone = createdEmployee.PhoneNumber,
-            Password = createdAccount.Password,
-            Major = createdEducation.Major,
-            Degree = createdEducation.Degree,
-            Gpa = createdEducation.Gpa,
-            UniversityCode = createdUniversity.Code,
-            UniversityName = createdUniversity.Name
-        };
-
-        return toDto;
     }
 
     public IEnumerable<GetAccountDto>? GetAccount()

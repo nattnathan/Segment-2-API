@@ -1,4 +1,5 @@
-﻿using API.DTOs.Rooms;
+﻿using API.DTOs.Booking;
+using API.DTOs.Rooms;
 using API.Services;
 using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -154,7 +155,7 @@ public class RoomController : ControllerBase
     public IActionResult GetByName(string name)
     {
         var room = _service.GetRoom(name);
-        if (!room.Any())
+        if (room is null)
         {
             return NotFound(new ResponseHandler<GetRoomDto>
             {
@@ -170,6 +171,30 @@ public class RoomController : ControllerBase
             Status = HttpStatusCode.OK.ToString(),
             Message = "Data By Name Found",
             Data = room
+        });
+    }
+
+    [HttpGet("get-unused-rooms")]
+    public IActionResult GetUnusedRooms()
+    {
+        var rooms = _service.GetUnusedRoom();
+        if (rooms.Count() == 0)
+        {
+            return NotFound(new ResponseHandler<IEnumerable<UnusedRoomDto>>
+            {
+                Code = StatusCodes.Status404NotFound,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "All Rooms In Used"
+
+            });
+        }
+
+        return Ok(new ResponseHandler<IEnumerable<UnusedRoomDto>>
+        {
+            Code = StatusCodes.Status200OK,
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "Room Unused",
+            Data = rooms
         });
     }
 }

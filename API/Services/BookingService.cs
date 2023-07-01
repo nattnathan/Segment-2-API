@@ -1,5 +1,6 @@
 ﻿using API.Contracts;
 using API.DTOs.Booking;
+using API.DTOs.Rooms;
 using API.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 
