@@ -1,9 +1,11 @@
-﻿using API.Models;
+﻿using API.DTOs.Booking;
+using API.Models;
 
 namespace API.Contracts
 {
     public interface IBookingRepository : IGeneralRepository<Booking>
     {
+        IEnumerable<BookingDetailsDto> GetBookingDetails();
         /*ICollection<Booking> GetAll();
         Booking? GetByGuid(Guid guid);
         Booking Create(Booking booking);

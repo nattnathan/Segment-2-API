@@ -3,6 +3,7 @@ using API.DTOs.Booking;
 using API.DTOs.Rooms;
 using API.Models;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace API.Services;
 
@@ -196,5 +197,29 @@ public class BookingService
         }
 
         return bookingDurations;
+    }
+
+    public List<BookingDetailsDto>? GetBookingDetais()
+    {
+        var booking = _bookingRepository.GetBookingDetails();
+        var bookingDetails = booking.Select(b => new BookingDetailsDto
+        {
+            Guid = b.Guid,
+            BookedNik = b.BookedNik,
+            BookedBy = b.BookedBy,
+            RoomName = b.RoomName,
+            StartDate = b.StartDate,
+            EndDate = b.EndDate,
+            Status = b.Status,
+            Remarks = b.Remarks
+        }).ToList();
+
+        return bookingDetails;
+    }
+
+    public BookingDetailsDto GetBookingDetailsByGuid(Guid guid)
+    {
+        var relatedBooking = GetBookingDetais().SingleOrDefault(b => b.Guid == guid);
+        return relatedBooking;
     }
 }
