@@ -315,13 +315,12 @@ public class AccountService
         }
 
         var account = _accountRepository.GetByGuid(emailEmp.Guid);
-        var isPasswordValid = Hashing.ValidatePassword(login.Password, account.Password);
-        if (!isPasswordValid)
+        if (account == null)
         {
             return "0";
         }
-
-        if (Hashing.ValidatePassword(login.Password, account!.Password))
+        var isPasswordValid = Hashing.ValidatePassword(login.Password, account.Password);
+        if (!isPasswordValid)
         {
             return "-1";
         }
