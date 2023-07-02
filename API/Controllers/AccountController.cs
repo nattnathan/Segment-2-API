@@ -1,6 +1,8 @@
 ﻿using API.DTOs.Account;
 using API.Services;
 using API.Utilities;
+using API.Utilities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -8,7 +10,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/accounts")]
-
+[Authorize(Roles = $"{nameof(RoleLevel.Admin)}")]
 public class AccountController : ControllerBase
 {
     private readonly AccountService _service;
@@ -67,6 +69,7 @@ public class AccountController : ControllerBase
 
     [Route("register")]
     [HttpPost]
+    [AllowAnonymous]
     public IActionResult Register(RegisterDto register)
     {
         var createdRegister = _service.Register(register);
@@ -175,6 +178,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public IActionResult Login(LoginDto loginDto)
     {
         var login = _service.Login(loginDto);
@@ -219,6 +223,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("forgot-password")]
+    [AllowAnonymous]
     public IActionResult ForgotPassword(string email)
     {
         var generateOtp = _service.ForgotPassword(email);
@@ -242,6 +247,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPut("change-password")]
+    [Authorize(Roles = $"{nameof(RoleLevel.User)}")]
     public IActionResult ChangePassword(ChangePasswordDto changePasswordDto)
     {
         var update = _service.ChangePassword(changePasswordDto);

@@ -1,6 +1,8 @@
 ﻿using API.DTOs.Universities;
 using API.Services;
 using API.Utilities;
+using API.Utilities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -8,8 +10,8 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/universities")]
-
- public class UniversityController : ControllerBase 
+[Authorize(Roles = $"{nameof(RoleLevel.Admin)}")]
+public class UniversityController : ControllerBase 
  {   
     private readonly UniversityService _service;
 

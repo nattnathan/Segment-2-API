@@ -333,6 +333,7 @@ public class AccountService
             };
 
         var getAccountRole = _accountRoleRepository.GetAccountRolesByAccountGuid(emailEmp.Guid);
+
         var getRoleNameByAccountRole = from ar in getAccountRole
                                        join r in _roleRepository.GetAll() on ar.RoleGuid equals r.Guid
                                        select r.Name;

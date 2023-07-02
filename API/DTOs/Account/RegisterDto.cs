@@ -23,9 +23,11 @@ public class RegisterDto
 
     [Required]
     [EmailAddress]
+    [EmployeeDuplicateProperty("string", "Email")]
     public string Email { get; set; }
 
     [Phone]
+    [EmployeeDuplicateProperty("string", "PhoneNumber")]
     public string Phone { get; set; }
 
     [Required]
