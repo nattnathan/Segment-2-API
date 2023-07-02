@@ -1,11 +1,8 @@
 ﻿using API.Contracts;
 using API.Data;
 using API.DTOs.Account;
-using API.DTOs.AccountRole;
 using API.Models;
-using API.Repositories;
 using API.Utilities;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 namespace API.Services;
@@ -21,7 +18,7 @@ public class AccountService
     private readonly IEmailHandler _emailHandler;
     private readonly IAccountRoleRepository _accountRoleRepository;
     private readonly BookingDbContext _bookingDbContext;
-    public AccountService(IAccountRepository accountRepository, 
+    public AccountService(IAccountRepository accountRepository,
                          IEmployeeRepository employeeRepository,
                          IUniversityRepository universityRepository,
                          IEducationRepository educationRepository,
@@ -45,6 +42,7 @@ public class AccountService
     public RegisterDto? Register(RegisterDto registerDto)
     {
         EmployeeService employeService = new EmployeeService(_employeeRepository, _educationRepository, _universityRepository);
+
         using var transaction = _bookingDbContext.Database.BeginTransaction();
         try
         {
@@ -200,7 +198,7 @@ public class AccountService
         var account = new Account
         {
             Guid = newAccountDto.Guid,
-            Password = Hashing.HashPassword(newAccountDto.Password),            
+            Password = Hashing.HashPassword(newAccountDto.Password),
             Otp = newAccountDto.Otp,
             IsDeleted = newAccountDto.IsDeleted,
             IsUsed = newAccountDto.IsUsed,
@@ -283,7 +281,7 @@ public class AccountService
         var toDto = new ForgotPasswordDto
         {
             Email = employee.Email,
-            Otp = GenerateRandomOTP(),
+            Otp = GenerateOtp.GenerateRandomOTP(),
             ExpireTime = DateTime.Now.AddMinutes(5)
         };
 
@@ -308,13 +306,6 @@ public class AccountService
         return toDto;
     }
 
-    private int GenerateRandomOTP()
-    {
-        var random = new Random();
-        var otp = random.Next(100000, 999999);
-        return otp;
-    }
-
     public string Login(LoginDto login)
     {
         var emailEmp = _employeeRepository.GetByEmail(login.Email);
@@ -323,9 +314,14 @@ public class AccountService
             return "0";
         }
 
-        var pass = _accountRepository.GetByGuid(emailEmp.Guid);
-        var isPasswordValid = Hashing.ValidatePassword(login.Password, pass.Password);
+        var account = _accountRepository.GetByGuid(emailEmp.Guid);
+        var isPasswordValid = Hashing.ValidatePassword(login.Password, account.Password);
         if (!isPasswordValid)
+        {
+            return "0";
+        }
+
+        if (Hashing.ValidatePassword(login.Password, account!.Password))
         {
             return "-1";
         }
@@ -336,6 +332,13 @@ public class AccountService
                 new Claim("FullName", $"{emailEmp.FirstName} {emailEmp.LastName}"),
                 new Claim("Email", login.Email)
             };
+
+        var getAccountRole = _accountRoleRepository.GetAccountRolesByAccountGuid(emailEmp.Guid);
+        var getRoleNameByAccountRole = from ar in getAccountRole
+                                       join r in _roleRepository.GetAll() on ar.RoleGuid equals r.Guid
+                                       select r.Name;
+
+        claims.AddRange(getRoleNameByAccountRole.Select(role => new Claim(ClaimTypes.Role, role)));
         try
         {
             var getToken = _tokenHandler.GenerateToken(claims);
