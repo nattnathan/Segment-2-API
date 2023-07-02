@@ -1,15 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace API.DTOs.Account
-{
-    public class ForgotPasswordDto
-    {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-        
-        public int Otp { get; set; }
+namespace API.DTOs.Account;
 
-        public DateTime ExpireTime { get; set; }
-    }
+public class ForgotPasswordDto
+{
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+
+    [Required]
+    public int Otp { get; set; }
+
+    [Required]
+    public DateTime ExpireTime { get; set; }
 }

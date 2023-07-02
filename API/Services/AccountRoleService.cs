@@ -98,10 +98,10 @@ public class AccountRoleService
         var isUpdate = _accountRoleRepository.Update(accountRole);
         if (!isUpdate)
         {
-            return 0;
+            return 0; // Bad Request
         }
 
-        return 1;
+        return 1; // succes update
     }
 
     public int DeleteAccountRole(Guid guid)

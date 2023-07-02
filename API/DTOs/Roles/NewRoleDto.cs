@@ -1,10 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace API.DTOs.Roles
+namespace API.DTOs.Roles;
+
+public class NewRoleDto
 {
-    public class NewRoleDto
-    {
-        [Required]
-        public string Name { get; set; }
-    }
+    [Required]
+    public string Name { get; set; }
 }

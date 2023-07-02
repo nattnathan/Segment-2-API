@@ -48,12 +48,12 @@ public class RoleService
         return toDto; 
     }
 
-    public IEnumerable<GetRoleDto>? GetRole(string name)
+    /*public GetRoleDto? GetByName(string name)
     {
         var roles = _roleRepository.GetByName(name);
         if (!roles.Any())
         {
-            return null; 
+            return null;
         }
 
         var toDto = roles.Select(role => new GetRoleDto
@@ -63,8 +63,8 @@ public class RoleService
 
         }).ToList();
 
-        return toDto; 
-    }
+        return toDto;
+    }*/
 
     public GetRoleDto? CreateRole(NewRoleDto newRoleDto)
     {

@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace API.DTOs.AccountRole
-{
-    public class NewAccountRoleDto
-    {
-        [Required]
-        public Guid AccountGuid { get; set; }
+namespace API.DTOs.AccountRole;
 
-        [Required]
-        public Guid RoleGuid { get; set; }
-    }
+public class NewAccountRoleDto
+{
+    [Required]
+    public Guid AccountGuid { get; set; }
+
+    [Required]
+    public Guid RoleGuid { get; set; }
 }
