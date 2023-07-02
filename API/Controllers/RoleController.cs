@@ -151,7 +151,7 @@ public class RoleController : ControllerBase
         });
     }
 
-    [HttpGet("name/{name}")]
+    /*[HttpGet("name/{name}")]
     public IActionResult GetByName(string name)
     {
         var role = _service.GetRole(name);
@@ -165,14 +165,14 @@ public class RoleController : ControllerBase
             });
         }
 
-        return Ok(new ResponseHandler<IEnumerable<GetRoleDto>>
+        return Ok(new ResponseHandler<GetRoleDto>
         {
             Code = StatusCodes.Status200OK,
             Status = HttpStatusCode.OK.ToString(),
             Message = "Data By Name Found",
             Data = role
         });
-    }
+    }*/
 }
 
 

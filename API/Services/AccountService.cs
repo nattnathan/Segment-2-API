@@ -1,8 +1,11 @@
 ﻿using API.Contracts;
 using API.Data;
 using API.DTOs.Account;
+using API.DTOs.AccountRole;
 using API.Models;
+using API.Repositories;
 using API.Utilities;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 namespace API.Services;
@@ -16,6 +19,7 @@ public class AccountService
     private readonly ITokenHandler _tokenHandler;
     private readonly IRoleRepository _roleRepository;
     private readonly IEmailHandler _emailHandler;
+    private readonly IAccountRoleRepository _accountRoleRepository;
     private readonly BookingDbContext _bookingDbContext;
     public AccountService(IAccountRepository accountRepository, 
                          IEmployeeRepository employeeRepository,
@@ -24,6 +28,7 @@ public class AccountService
                          ITokenHandler tokenHandler,
                          IRoleRepository roleRepository,
                          IEmailHandler emailHandler,
+                         IAccountRoleRepository accountRoleRepository,
                          BookingDbContext bookingDbContext)
     {
         _accountRepository = accountRepository;
@@ -34,6 +39,7 @@ public class AccountService
         _roleRepository = roleRepository;
         _emailHandler = emailHandler;
         _bookingDbContext = bookingDbContext;
+        _accountRoleRepository = accountRoleRepository;
     }
 
     public RegisterDto? Register(RegisterDto registerDto)
@@ -107,7 +113,7 @@ public class AccountService
                 Otp = 0,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now,
-                ExpiredTime = DateTime.Now.AddYears(3)
+                ExpiredTime = DateTime.Now
             };
 
             var createdAccount = _accountRepository.Create(account);
@@ -115,6 +121,13 @@ public class AccountService
             {
                 return null;
             }
+
+            var getRoleUser = _roleRepository.GetByName("User");
+            _accountRoleRepository.Create(new AccountRole
+            {
+                AccountGuid = account.Guid,
+                RoleGuid = getRoleUser.Guid
+            });
 
             var toDto = new RegisterDto
             {
