@@ -1,0 +1,54 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 10px;
+}
+
+.button {
+    border-color: hotpink;
+    background-color: transparent;
+    color: black;
+    padding: 4.5px;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 0.35rem;
+    transition: color 0.5s ease-in-out,background-color 0.5s ease-in-out,border-color 0.5s ease-in-out,box-shadow 0.5s ease-in-out;
+}
+
+.button2 {
+    border-color: hotpink;
+    background-color: transparent;
+    color: black;
+    padding: 4.55px;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 0.35rem;
+    margin-top: 2px;
+    transition: color 0.5s ease-in-out,background-color 0.5s ease-in-out,border-color 0.5s ease-in-out,box-shadow 0.5s ease-in-out;
+    display: none;
+}
+
+.button:hover {
+    background-color: black;
+    border-color: transparent;
+    color: hotpink;
+}
+
+.button2:hover {
+    background-color: black;
+    border-color: transparent;
+    color: hotpink;
+}
