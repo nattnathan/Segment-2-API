@@ -189,6 +189,50 @@ function detail(stringURL) {
                 backgroundColor = "#A9A9A9"; // Abu-abu tua
                 color = "black";
                 iconClass = "fas fa-circle"; // Ikon normal
+            } else if (type.type.name === "electric") {
+                backgroundColor = "#FFD700"; // Kuning
+                color = "black";
+                iconClass = "fas fa-bolt"; // Ikon petir
+            } else if (type.type.name === "ice") {
+                backgroundColor = "#00BFFF"; // Biru langit cerah
+                color = "black";
+                iconClass = "fas fa-snowflake"; // Ikon es
+            } else if (type.type.name === "fighting") {
+                backgroundColor = "#8B0000"; // Merah gelap
+                color = "white";
+                iconClass = "fas fa-fist-raised"; // Ikon bertarung
+            } else if (type.type.name === "ground") {
+                backgroundColor = "#DEB887"; // Cokelat muda
+                color = "black";
+                iconClass = "fas fa-mountain"; // Ikon tanah
+            } else if (type.type.name === "psychic") {
+                backgroundColor = "#FF1493"; // Merah muda cerah
+                color = "white";
+                iconClass = "fas fa-brain"; // Ikon psikis
+            } else if (type.type.name === "rock") {
+                backgroundColor = "#A0522D"; // Cokelat tua
+                color = "white";
+                iconClass = "fas fa-mountain"; // Ikon batu
+            } else if (type.type.name === "ghost") {
+                backgroundColor = "#4B0082"; // Ungu tua gelap
+                color = "white";
+                iconClass = "fas fa-ghost"; // Ikon hantu
+            } else if (type.type.name === "dragon") {
+                backgroundColor = "#9932CC"; // Ungu tua
+                color = "white";
+                iconClass = "fas fa-dragon"; // Ikon naga
+            } else if (type.type.name === "dark") {
+                backgroundColor = "#2F4F4F"; // Abu-abu gelap
+                color = "white";
+                iconClass = "fas fa-moon"; // Ikon gelap
+            } else if (type.type.name === "steel") {
+                backgroundColor = "#A9A9A9"; // Abu-abu tua
+                color = "white";
+                iconClass = "fas fa-shield-alt"; // Ikon baja
+            } else if (type.type.name === "fairy") {
+                backgroundColor = "#FF69B4"; // Merah muda terang
+                color = "black";
+                iconClass = "fas fa-magic"; // Ikon peri
             } else {
                 backgroundColor = "#000000"; // Warna default jika tidak ada yang cocok
                 color = "white";
@@ -217,7 +261,7 @@ function detail(stringURL) {
 $(document).ready(function () {
     $('#myTable').DataTable({
         ajax: {
-            url: "https://pokeapi.co/api/v2/pokemon/?limit=500",
+            url: "https://pokeapi.co/api/v2/pokemon/?limit=100",
             dataType: "json",
             dataSrc: "results"
         },
