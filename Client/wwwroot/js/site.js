@@ -59,7 +59,7 @@ let getFakultasKomputer = (arrayName) => {
 }
 getFakultasKomputer(arrayMhsObj);
 
-$.ajax({
+/*$.ajax({
     url: "https://pokeapi.co/api/v2/pokemon/"
 }).done((result) => {
     console.log(result.results);
@@ -73,8 +73,7 @@ $.ajax({
     })
     $("#tbody").html(temp);
     console.log(temp);
-})
-
+})*/
 
 function detail(stringURL) {
     $.ajax({
@@ -214,3 +213,28 @@ function detail(stringURL) {
         $("#base-experience").html(res.base_experience);
     });
 }
+
+$(document).ready(function () {
+    $('#myTable').DataTable({
+        ajax: {
+            url: "https://pokeapi.co/api/v2/pokemon/?limit=500",
+            dataType: "json",
+            dataSrc: "results"
+        },
+        columns: [
+            {
+                data: 'no',
+                render: function (data, type, row, meta) {
+                    return meta.row + 1;
+                }
+            },
+            { data: "name" },
+            {
+                data: 'action',
+                render: function (data, type, row) {
+                    return '<button onclick="detail(\'' + row.url + '\')" data-bs-toggle="modal" data-bs-target="#modal" class="btn btn-info">Detail</button>';
+                }
+            }
+        ]
+    });
+});
