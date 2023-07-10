@@ -11,7 +11,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/bookings")]
-[Authorize(Roles = $"{nameof(RoleLevel.Admin)}")]
+//[Authorize(Roles = $"{nameof(RoleLevel.Admin)}")]
 public class BookingController : ControllerBase
 {
     private readonly BookingService _service;

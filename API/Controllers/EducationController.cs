@@ -12,7 +12,7 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/educations")]
-[Authorize(Roles = $"{nameof(RoleLevel.Admin)}")]
+//[Authorize(Roles = $"{nameof(RoleLevel.Admin)}")]
 public class EducationController : ControllerBase
 {
     private readonly EducationService _service;
