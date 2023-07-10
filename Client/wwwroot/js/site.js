@@ -295,7 +295,7 @@ $(document).ready(function () {
         },
         dom: 'Bfrtip',
         buttons: [
-            'colvis', 'copy', 'csv',
+            'colvis', 'copy',
             {
                 extend: 'excelHtml5',
                 title: 'Excel',
@@ -338,7 +338,6 @@ $(document).ready(function () {
                 }   
             },
             {
-                //data: "birthDate"
                 data: "birthDate",
                 render: function (data, type, row) {
                     return moment(data).format("DD MMMM YYYY");
@@ -357,7 +356,6 @@ $(document).ready(function () {
                 }
             },
             {
-                //data: "hiringDate"
                 data: "hiringDate",
                 render: function (data, type, row) {
                     return moment(data).format("DD MMMM YYYY");
