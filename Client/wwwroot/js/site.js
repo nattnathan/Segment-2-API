@@ -293,7 +293,11 @@ $(document).ready(function () {
             dataType: "json",
             dataSrc: "data"
         },
-        dom: 'Bfrtip',
+        dom: "<'ui grid'" +
+            "<'row'" + "<'col-3'l>" + "<'col-6 mt--2'B>" + "<'col-3'f>" + ">" +
+            "<'row dt-table'" + "<'col'tr>" + ">" +
+            "<'row'" + "<'col-4'i>" + "<'col-8'p>" + ">" +
+            ">",
         buttons: [
             'colvis', 'copy',
             {
@@ -366,9 +370,60 @@ $(document).ready(function () {
             {
                 data: 'action',
                 render: function (data, type, row) {
-                    return '<button onclick="detail(\'' + row.url + '\')" data-bs-toggle="modal" data-bs-target="#modal" class="btn btn-info">Detail</button>';
+                    return `<div><button onclick="Update('${ row.guid }')" data-bs-toggle="modal" data-bs-target="#modalUpdate" class="btn btn-warning">Update</button> <button onclick="Delete('${row.guid}')" class="btn btn-danger">Delete</button></div>`;
                 }
             }
         ],
     });
 });
+
+function Insert() {
+    // Mendapatkan nilai-nilai input
+    let firstName = document.querySelector("#firstName").value;
+    let lastName = document.querySelector("#lastName").value;
+    let birthDate = document.querySelector("#birthDate").value;
+    let gender = document.querySelector("#gender").value;
+    let genderEnum;
+    if (gender === "Female") {
+        genderEnum = 0;
+    } else if (gender === "Male") {
+        genderEnum = 1;
+    }
+    let hiringDate = document.querySelector("#hiringDate").value;
+    let email = document.querySelector("#email").value;
+    let phoneNumber = document.querySelector("#phoneNumber").value;
+    // Data ke api
+    let data = {
+        firstName: firstName,
+        lastName: lastName,
+        birthDate: birthDate,
+        gender: genderEnum,
+        hiringDate: hiringDate,
+        email: email,
+        phoneNumber: phoneNumber
+    };
+    $.ajax({
+        url: "https://localhost:7256/api/employees", // Sesuaikan URL sesuai dengan endpoint API Anda
+        type: "POST",
+        data: JSON.stringify(data),
+        //contentType: "application/json"
+    }).done(result => {
+        alert("Insert successful"); // Tampilkan alert pemberitahuan jika berhasil
+        location.reload();
+    }).fail(error => {
+        alert("Insert failed"); // Tampilkan alert pemberitahuan jika gagal
+    });
+}
+
+function Delete(deleteId) {
+    console.log(deleteId);
+    $.ajax({
+        url: "https://localhost:7256/api/employees?guid=" + deleteId, // Sesuaikan URL sesuai dengan endpoint API Anda
+        type: "DELETE",
+    }).done(result => {        
+        alert("Delete successful"); // Tampilkan alert pemberitahuan jika berhasil
+        location.reload();
+    }).fail(error => {
+        alert("Delete failed"); // Tampilkan alert pemberitahuan jika gagal
+    });
+}
