@@ -89,36 +89,38 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <input type="hidden" class="form-control" id="nikU" value="">
+                    <input type="hidden" class="form-control" id="guidU" value="">
                     <div class="mb-3">
                         <label for="firstName" class="form-label">First Name *</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="Enter First Name">
+                        <input type="text" class="form-control" id="firstNameU">
                     </div>
                     <div class="mb-3">
                         <label for="lastName" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" placeholder="Enter Last Name">
+                        <input type="text" class="form-control" id="lastNameU" placeholder="Enter Last Name">
                     </div>
                     <div class="mb-3">
                         <label for="birthDate" class="form-label">Birth Date *</label>
-                        <input type="date" class="form-control" id="birthDate">
+                        <input type="date" class="form-control" id="birthDateU">
                     </div>
                     <div class="mb-3">
                         <label for="gender" class="form-label">Gender *</label>
-                        <select class="form-select" id="gender">
+                        <select class="form-select" id="genderU">
                             <option value="M">Male</option>
                             <option value="F">Female</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="hiringDate" class="form-label">Hiring Date *</label>
-                        <input type="date" class="form-control" id="hiringDate">
+                        <input type="date" class="form-control" id="hiringDateU">
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email *</label>
-                        <input type="email" class="form-control" id="email" placeholder="Enter Email">
+                        <input type="email" class="form-control" id="emailU" placeholder="Enter Email">
                     </div>
                     <div class="mb-3">
                         <label for="phoneNumber" class="form-label">Phone Number *</label>
-                        <input type="number" class="form-control" id="phoneNumber" placeholder="Enter Phone Number">
+                        <input type="number" class="form-control" id="phoneNumberU" placeholder="Enter Phone Number">
                     </div>
                 </form>
             </div>
@@ -128,7 +130,7 @@
                 </div>
                 <div style="grid-column: 2;">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="Update()">Submit</button>
+                    <button type="button" class="btn btn-primary" onclick="Update()">Submit Update</button>
                 </div>
             </div>
         </div>

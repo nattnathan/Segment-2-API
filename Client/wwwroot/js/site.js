@@ -59,22 +59,6 @@ let getFakultasKomputer = (arrayName) => {
 }
 getFakultasKomputer(arrayMhsObj);
 
-/*$.ajax({
-    url: "https://pokeapi.co/api/v2/pokemon/"
-}).done((result) => {
-    console.log(result.results);
-    let temp = "";
-    $.each(result.results, (key, val) => {
-        temp += `<tr>
-                    <td>${key + 1}</td>
-                    <td>${val.name}</td>
-                    <td><button onclick="detail('${val.url}')" data-bs-toggle="modal" data-bs-target="#modal" class="btn btn-info">Detail</button></td>
-                </tr>`;
-    })
-    $("#tbody").html(temp);
-    console.log(temp);
-})*/
-
 function detail(stringURL) {
     $.ajax({
         url: stringURL
@@ -370,7 +354,7 @@ $(document).ready(function () {
             {
                 data: 'action',
                 render: function (data, type, row) {
-                    return `<div><button onclick="Update('${ row.guid }')" data-bs-toggle="modal" data-bs-target="#modalUpdate" class="btn btn-warning">Update</button> <button onclick="Delete('${row.guid}')" class="btn btn-danger">Delete</button></div>`;
+                    return `<div><button onclick="Get('${ row.guid }')" data-bs-toggle="modal" data-bs-target="#modalUpdate" class="btn btn-warning">Update</button> <button onclick="Delete('${row.guid}')" class="btn btn-danger">Delete</button></div>`;
                 }
             }
         ],
@@ -406,24 +390,164 @@ function Insert() {
         url: "https://localhost:7256/api/employees", // Sesuaikan URL sesuai dengan endpoint API Anda
         type: "POST",
         data: JSON.stringify(data),
-        //contentType: "application/json"
+        contentType: "application/json"
     }).done(result => {
-        alert("Insert successful"); // Tampilkan alert pemberitahuan jika berhasil
-        location.reload();
+        Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Your work has been saved',
+            showConfirmButton: true,
+            confirmButtonText: 'OK',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                location.reload();
+            }
+        });
     }).fail(error => {
         alert("Insert failed"); // Tampilkan alert pemberitahuan jika gagal
     });
 }
 
 function Delete(deleteId) {
-    console.log(deleteId);
-    $.ajax({
-        url: "https://localhost:7256/api/employees?guid=" + deleteId, // Sesuaikan URL sesuai dengan endpoint API Anda
-        type: "DELETE",
-    }).done(result => {        
-        alert("Delete successful"); // Tampilkan alert pemberitahuan jika berhasil
-        location.reload();
-    }).fail(error => {
-        alert("Delete failed"); // Tampilkan alert pemberitahuan jika gagal
+    Swal.fire({
+        title: 'Konfirmasi',
+        text: 'Apakah Anda yakin ingin menghapus data ini?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Jika pengguna mengonfirmasi untuk menghapus
+            $.ajax({
+                url: "https://localhost:7256/api/employees?guid=" + deleteId, // Sesuaikan URL sesuai dengan endpoint API Anda
+                type: "DELETE",
+            }).done(result => {
+                Swal.fire('Deleted!', 'Data berhasil dihapus.', 'success').then(() => {
+                    location.reload();
+                });
+            }).fail(error => {
+                Swal.fire('Error!', 'Gagal menghapus data.', 'error');
+            });
+        }
     });
 }
+
+function Get(data) {
+    console.log(data);
+    $.ajax({
+        url: "https://localhost:7256/api/employees/" + data, // Sesuaikan URL sesuai dengan endpoint API Anda
+        type: "GET",
+        dataType: "json"
+    }).done(res => {
+        $("#guidU").val(res.data.guid);
+        $("#nikU").val(res.data.nik);
+        $("#firstNameU").val(res.data.firstName);
+        $("#lastNameU").val(res.data.lastName);
+        let birthDate = moment(res.data.birthDate).format('yyyy-MM-DD');
+        $("#birthDateU").val(birthDate);
+        let genderEnum = res.data.gender;
+        if (genderEnum === 0 ) {
+            gender = "F";
+        } else if (genderEnum === 1) {
+            gender = "M";
+        }
+        $("#genderU").val(gender);
+        let hiringDate = moment(res.data.hiringDate).format('yyyy-MM-DD');
+        $("#hiringDateU").val(hiringDate);
+        $("#emailU").val(res.data.email);
+        $("#phoneNumberU").val(res.data.phoneNumber);
+        console.log(res);
+    }).fail(error => {
+        alert("Insert failed"); // Tampilkan alert pemberitahuan jika gagal
+    });
+}
+
+function Update() {
+    // Mendapatkan nilai-nilai input
+    let firstName = document.querySelector("#firstNameU").value;
+    let guid = document.querySelector("#guidU").value;
+    let nik = document.querySelector("#nikU").value;
+    let lastName = document.querySelector("#lastNameU").value;
+    let birthDate = document.querySelector("#birthDateU").value;
+    let gender = document.querySelector("#genderU").value;
+    let genderEnum;
+    if (gender === "F") {
+        genderEnum = 0;
+    } else if (gender === "M") {
+        genderEnum = 1;
+    }
+    let hiringDate = document.querySelector("#hiringDateU").value;
+    let email = document.querySelector("#emailU").value;
+    let phoneNumber = document.querySelector("#phoneNumberU").value;
+    // Data ke api
+    let data = {
+        firstName: firstName,
+        lastName: lastName,
+        birthDate: birthDate,
+        gender: genderEnum,
+        hiringDate: hiringDate,
+        email: email,
+        phoneNumber: phoneNumber,
+        nik: nik,
+        guid: guid
+    };
+    console.log(data);
+    $.ajax({
+        url: "https://localhost:7256/api/employees", // Sesuaikan URL sesuai dengan endpoint API Anda
+        type: "PUT",
+        data: JSON.stringify(data),
+        contentType: "application/json"
+    }).done(result => {
+        Swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: 'Your work has been saved',
+            showConfirmButton: true,
+            confirmButtonText: 'OK',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                location.reload();
+            }
+        });
+    }).fail(error => {
+        alert("Insert failed"); // Tampilkan alert pemberitahuan jika gagal
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* console.log(birthDate);
+        let dateObj = new Date(birthDate);
+        let day = dateObj.getDate().toString().padStart(2, '0');
+        let month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+        let year = dateObj.getFullYear();
+        let formattedDate = year + '-' + month + '-' + day;
+        console.log(formattedDate);*/
