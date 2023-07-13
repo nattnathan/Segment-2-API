@@ -1,0 +1,35 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+button{
+    background-color:red;
+}
+
+table .btn-primary{
+    padding:5px 25px;
+}
+
+body table .btn-primary {
+    padding: 10px 20px;
+}
+
+.dataTables_length, .dataTables_filter{
+    padding-bottom:20px;
+}
+

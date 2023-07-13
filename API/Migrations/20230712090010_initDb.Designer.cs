@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(BookingDbContext))]
-    [Migration("20230623025801_TableNameEdit")]
-    partial class TableNameEdit
+    [Migration("20230712090010_initDb")]
+    partial class initDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -119,6 +119,10 @@ namespace API.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("modified_date");
 
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("remarks");
+
                     b.Property<Guid>("RoomGuid")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("room_guid");
@@ -130,10 +134,6 @@ namespace API.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int")
                         .HasColumnName("status");
-
-                    b.Property<string>("remarks")
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("remarks");
 
                     b.HasKey("Guid");
 
@@ -297,7 +297,7 @@ namespace API.Migrations
 
                     b.HasKey("Guid");
 
-                    b.ToTable("tb_tr_rooms");
+                    b.ToTable("tb_m_rooms");
                 });
 
             modelBuilder.Entity("API.Models.University", b =>

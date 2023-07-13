@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace API.Migrations
 {
-    public partial class FirstMigration : Migration
+    public partial class initDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,6 +45,22 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "tb_m_rooms",
+                columns: table => new
+                {
+                    guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    name = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    floor = table.Column<int>(type: "int", nullable: false),
+                    capacity = table.Column<int>(type: "int", nullable: false),
+                    created_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    modified_date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tb_m_rooms", x => x.guid);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "tb_m_universities",
                 columns: table => new
                 {
@@ -57,22 +73,6 @@ namespace API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_tb_m_universities", x => x.guid);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tb_tr_rooms",
-                columns: table => new
-                {
-                    guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    name = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    floor = table.Column<int>(type: "int", nullable: false),
-                    capacity = table.Column<int>(type: "int", nullable: false),
-                    created_date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    modified_date = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tb_tr_rooms", x => x.guid);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,35 +95,6 @@ namespace API.Migrations
                         name: "FK_tb_m_accounts_tb_m_employees_guid",
                         column: x => x.guid,
                         principalTable: "tb_m_employees",
-                        principalColumn: "guid",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "tb_m_account_educations",
-                columns: table => new
-                {
-                    guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    major = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    degree = table.Column<string>(type: "nvarchar(10)", nullable: false),
-                    gpa = table.Column<double>(type: "float", nullable: false),
-                    university_guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    created_date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    modified_date = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_tb_m_account_educations", x => x.guid);
-                    table.ForeignKey(
-                        name: "FK_tb_m_account_educations_tb_m_employees_guid",
-                        column: x => x.guid,
-                        principalTable: "tb_m_employees",
-                        principalColumn: "guid",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_tb_m_account_educations_tb_m_universities_university_guid",
-                        column: x => x.university_guid,
-                        principalTable: "tb_m_universities",
                         principalColumn: "guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -152,9 +123,38 @@ namespace API.Migrations
                         principalColumn: "guid",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_tb_tr_bookings_tb_tr_rooms_room_guid",
+                        name: "FK_tb_tr_bookings_tb_m_rooms_room_guid",
                         column: x => x.room_guid,
-                        principalTable: "tb_tr_rooms",
+                        principalTable: "tb_m_rooms",
+                        principalColumn: "guid",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "tb_m_educations",
+                columns: table => new
+                {
+                    guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    major = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    degree = table.Column<string>(type: "nvarchar(10)", nullable: false),
+                    gpa = table.Column<double>(type: "float", nullable: false),
+                    university_guid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    created_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    modified_date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_tb_m_educations", x => x.guid);
+                    table.ForeignKey(
+                        name: "FK_tb_m_educations_tb_m_employees_guid",
+                        column: x => x.guid,
+                        principalTable: "tb_m_employees",
+                        principalColumn: "guid",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_tb_m_educations_tb_m_universities_university_guid",
+                        column: x => x.university_guid,
+                        principalTable: "tb_m_universities",
                         principalColumn: "guid",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -187,8 +187,8 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_tb_m_account_educations_university_guid",
-                table: "tb_m_account_educations",
+                name: "IX_tb_m_educations_university_guid",
+                table: "tb_m_educations",
                 column: "university_guid");
 
             migrationBuilder.CreateIndex(
@@ -221,7 +221,7 @@ namespace API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "tb_m_account_educations");
+                name: "tb_m_educations");
 
             migrationBuilder.DropTable(
                 name: "tb_tr_account_roles");
@@ -239,7 +239,7 @@ namespace API.Migrations
                 name: "tb_m_roles");
 
             migrationBuilder.DropTable(
-                name: "tb_tr_rooms");
+                name: "tb_m_rooms");
 
             migrationBuilder.DropTable(
                 name: "tb_m_employees");
